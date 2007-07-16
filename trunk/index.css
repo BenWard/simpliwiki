@@ -42,12 +42,15 @@ hr {
 }
 
 pre {
-	background-color: #f0f8f0;
-	margin: 0px 0px 12px 20px;
-	padding-top: 4px;
-	padding-right: 10px;
-	padding-bottom: 4px;
-	padding-left: 10px;
+	background-color: #eee;
+	margin: 0;
+	padding: 4px;
+	/* stroke each browser so that they wrap lines in the pre tag */
+	white-space: pre-wrap;       /* css-3 */
+	white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+	white-space: -pre-wrap;      /* Opera 4-6 */
+	white-space: -o-pre-wrap;    /* Opera 7 */
+	word-wrap: break-word;       /* Internet Explorer 5.5+ */
 }
 
 textarea {
@@ -84,4 +87,12 @@ textarea {
 	background-color: #ddeedd;
 	font-size: 12px;
 	padding: 4px;
+}
+
+a.tool {
+	padding-right: 8px;
+	margin: 0;
+}
+
+a.tool:hover {
 }
