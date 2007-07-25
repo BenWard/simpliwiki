@@ -16,6 +16,7 @@ include_once "markdown.php";
 
 include_once "config.php";
 
+session_name("W2");
 session_start();
 
 if ( REQUIRE_PASSWORD && $_SESSION['password'] != W2_PASSWORD )
