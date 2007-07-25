@@ -16,6 +16,19 @@ include_once "markdown.php";
 
 include_once "config.php";
 
+session_start();
+
+if ( REQUIRE_PASSWORD && $_SESSION['password'] != W2_PASSWORD )
+{
+	if ( $_POST['p'] == W2_PASSWORD )
+		$_SESSION['password'] = W2_PASSWORD;
+	else
+	{
+		print "<html><body><form method=\"post\"><input type=\"password\" name=\"p\"></form></body></html>";
+		exit;
+	}
+}
+
 // Support functions
 
 function printToolbar()
@@ -101,7 +114,7 @@ else
 
 if ( $action == "edit" || $action == "new" )
 {
-	$html = "<form id=\"edit\" method=\"post\" action=\"" . BASE_URI . "/index.php\">\n";
+	$html = "<form id=\"edit\" method=\"post\" action=\"" . BASE_URI . "/index.php/$page\">\n";
 
 	if ( $action == "edit" )
 		$html .= "<input type=\"hidden\" name=\"page\" value=\"$page\" />\n";
