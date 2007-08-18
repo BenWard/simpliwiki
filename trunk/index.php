@@ -54,7 +54,7 @@ function toHTML($inText)
 
  	$inText = preg_replace("/\[\[(.*?)\]\]/", "<a href=\"" . BASE_URI . "/index.php/\\1\">\\1</a>", $inText);
 	$inText = preg_replace("/\{\{(.*?)\}\}/", "<img src=\"images/\\1\" alt=\"\\1\" />", $inText);
-	$html .= Markdown($inText);
+	$html = Markdown($inText);
 
 	return $html;
 }
@@ -91,10 +91,10 @@ if ( isset($_REQUEST['action']) )
 else 
 	$action = '';
 
-if ( preg_match('@^/@', $_SERVER["PATH_INFO"]) ) 
+if ( preg_match('@^/@', @$_SERVER["PATH_INFO"]) ) 
 	$page = sanitizeFilename(substr($_SERVER["PATH_INFO"], 1));
 else 
-	$page = sanitizeFilename($_REQUEST['page']);
+	$page = sanitizeFilename(@$_REQUEST['page']);
 
 $upage = urlencode($page);
 
@@ -115,7 +115,8 @@ else
 
 if ( $action == "edit" || $action == "new" )
 {
-	$html = "<form id=\"edit\" method=\"post\" action=\"" . BASE_URI . "/index.php/$page\">\n";
+	$formAction = BASE_URI . (($action == 'edit') ? "/index.php/$page" : "/index.php");
+	$html = "<form id=\"edit\" method=\"post\" action=\"$formAction\">\n";
 
 	if ( $action == "edit" )
 		$html .= "<input type=\"hidden\" name=\"page\" value=\"$page\" />\n";
@@ -135,11 +136,11 @@ else if ( $action == "upload" )
 {
 	if ( DISABLE_UPLOADS )
 	{
-		$html .= "<p>Image uploading has been disabled on this installation.</p>";
+		$html = "<p>Image uploading has been disabled on this installation.</p>";
 	}
 	else
 	{
-		$html .= "<form id=\"upload\" method=\"post\" action=\"" . BASE_URI . "/index.php\" enctype=\"multipart/form-data\"><p>\n";
+		$html = "<form id=\"upload\" method=\"post\" action=\"" . BASE_URI . "/index.php\" enctype=\"multipart/form-data\"><p>\n";
 		$html .= "<input type=\"hidden\" name=\"action\" value=\"uploaded\" />";
 		$html .= "<input id=\"file\" type=\"file\" name=\"userfile\" />\n";
 		$html .= "<input id=\"upload\" type=\"submit\" value=\"Upload\" />\n";
