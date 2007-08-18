@@ -152,15 +152,24 @@ else if ( $action == "uploaded" )
 	if ( !DISABLE_UPLOADS )
 	{
 		$dstName = sanitizeFilename($_FILES['userfile']['name']);
-
-		if ( move_uploaded_file($_FILES['userfile']['tmp_name'], 
+		$fileType = $_FILES['userfile']['type'];
+		preg_match('/\.([^.]+)$/', $dstName, $matches);
+		$fileExt = isset($matches[1]) ? $matches[1] : null;
+		
+		if (in_array($fileType, explode(',', VALID_UPLOAD_TYPES)) &&
+			in_array($fileExt, explode(',', VALID_UPLOAD_EXTS)))
+		{
+			if ( move_uploaded_file($_FILES['userfile']['tmp_name'], 
 				BASE_PATH . "/images/$dstName") === true ) 
-		{
-			$html = "<p class=\"note\">File '$dstName' uploaded</p>\n";
-		}
-		else
-		{
-			$html = "<p class=\"note\">Upload error</p>\n";
+			{
+				$html = "<p class=\"note\">File '$dstName' uploaded</p>\n";
+			}
+			else
+			{
+				$html = "<p class=\"note\">Upload error</p>\n";
+			}
+		} else {
+			$html = "<p class=\"note\">Upload error: invalid file type</p>\n";
 		}
 	}
 
