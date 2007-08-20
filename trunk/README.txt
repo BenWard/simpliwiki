@@ -39,9 +39,8 @@ Installation
 3. Make sure that the "images" and "pages" directories are writable by your
    web server process.
    
-4. Edit the following lines in config.php to match your server configuration:
+4. Edit the following line in config.php to match your server configuration:
    
-   define(BASE_PATH, '/www/stevenf/w2'); 
    define(BASE_URI, 'http://stevenf.com/w2');	
    
    Leave trailing slashes off.
@@ -98,10 +97,28 @@ The following line in config.php may be changed if you'd like to use a
 different CSS stylesheet:
 
   define('CSS_FILE', 'index.css');
-  
-W2 has no built-in access control restrictions, but you can throw it behind
-a simple htaccess/htpasswd combo for slightly enhanced security.
 
+To control the format of the page timestamp, change the value of:
+
+  define('TITLE_DATE', 'r');
+
+PHP date & time format is used - see http://php.net/manual/en/function.date.php
+To disable the page timestamp completely, put two slashes at the beginning
+of the line.
+
+The size of the edit textarea is controlled by:
+
+  define('EDIT_ROWS', 18);
+  define('EDIT_COLS', 40);
+
+W2 has the ability to prompt for a password before allowing access to the
+site.  Two lines in config.php control this:
+
+  define('REQUIRE_PASSWORD', false);
+  define('W2_PASSWORD', 'secret');
+
+Set REQUIRE_PASSWORD to true and set W2_PASSWORD to the password you'd like
+to use.
 
 License
 -------
@@ -138,12 +155,20 @@ Other Contributions
   Craig Hockenberry
   Dan Sandler
   pcdinh
+  Victor Rehorst (chuma@chuma.org)
   And others!  Thank you!
   
   
   
 History
 -------
+
+1.0.2 (August 20, 2007)
+
+  - Added list of valid upload MIME types and file extensions (abhibeckert)
+  - Added config settings to change textarea size (vrehorst)
+  - Added page timestamp display support (vrehorst)
+  - Added simple authentication mechanism (stevenf)
 
 1.0.1 (July 16, 2007)
   

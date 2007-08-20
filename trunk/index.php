@@ -1,7 +1,7 @@
 <?php
 
 /*
- * W2 1.0.1
+ * W2 1.0.2
  *
  * Copyright (C) 2007 Steven Frank <http://stevenf.com/>
  * Code may be re-used as long as the above copyright notice is retained.
@@ -34,10 +34,13 @@ if ( REQUIRE_PASSWORD && $_SESSION['password'] != W2_PASSWORD )
 
 function printToolbar()
 {
-	global $upage, $page;
+	global $upage, $page,$action;
 
 	print "<div class=\"toolbar\">";
- 	print "<a class=\"tool first\" href=\"" . BASE_URI . "/index.php?action=edit&amp;page=$upage\">Edit</a> ";
+//	if ($action == "edit")
+//		print "<a class=\"tool first\" href=\"" . BASE_URI . "/index.php?action=rename&amp;page=$upage\">Rename</a> ";
+//	else
+		print "<a class=\"tool first\" href=\"" . BASE_URI . "/index.php?action=edit&amp;page=$upage\">Edit</a> ";
 	print "<a class=\"tool\" href=\"" . BASE_URI . "/index.php?action=new\">New</a> ";
 
 	if ( ! DISABLE_UPLOADS )
@@ -126,7 +129,7 @@ if ( $action == "edit" || $action == "new" )
 	if ( $action == "new" )
 		$text = "";
 
-	$html .= "<p><textarea id=\"text\" name=\"newText\" rows=\"18\" cols=\"40\">$text</textarea></p>\n";
+	$html .= "<p><textarea id=\"text\" name=\"newText\" rows=\"" . EDIT_ROWS . "\" cols=\"" . EDIT_COLS . "\">$text</textarea></p>\n";
 	$html .= "<p><input type=\"hidden\" name=\"action\" value=\"save\" />";
 	$html .= "<input id=\"save\" type=\"submit\" value=\"Save\" />\n";
 	$html .= "<input id=\"cancel\" type=\"button\" onclick=\"history.go(-1);\" value=\"Cancel\" /></p>\n";
@@ -183,6 +186,46 @@ else if ( $action == "save" )
 	
 	$html = "<p class=\"note\">Saved</p>\n";
 	$html .= toHTML($newText);
+}
+else if ( $action == "rename" )
+{
+	$html = "<form id=\"rename\" method=\"post\" action=\"" . BASE_URI . "/index.php\">";
+	$html .= "<p>Title: <input id=\"title\" type=\"text\" name=\"page\" value=\"" . htmlspecialchars($page) . "\" />";
+	$html .= "<input id=\"rename\" type=\"submit\" value=\"Rename\">";
+	$html .= "<input id=\"cancel\" type=\"button\" onclick=\"history.go(-1);\" value=\"Cancel\" />\n";
+	$html .= "<input type=\"hidden\" name=\"action\" value=\"renamed\" />";
+	$html .= "<input type=\"hidden\" name=\"prevpage\" value=\"" . htmlspecialchars($page) . "\" />";
+	$html .= "</p></form>";
+}
+else if ( $action == "renamed" )
+{
+	$pp = $_REQUEST['prevpage'];
+	$pg = $_REQUEST['page'];
+	error_log("RENAMING PAGE $pp -> $pg");
+	$prevpage = sanitizeFilename($pp);
+	$prevpage = urlencode($prevpage);
+	
+	$prevfilename = BASE_PATH . "/pages/$prevpage.txt";
+
+	if (rename($prevfilename, $filename))
+	{
+		// Success.  Change links in all pages to point to new page
+		if ($dh = opendir(BASE_PATH . "/pages/"))
+		{
+			while (($file = readdir($dh)) !== false)
+			{
+				$content = file_get_contents($file);
+				$pattern = "/\[\[" . $pp . "\]\]/g";
+				preg_replace($pattern, "[[$pg]]", $content);
+				file_put_contents($file, $content);
+			}
+		}
+	}
+	else
+	{
+		
+	}
+
 }
 else if ( $action == "all" )
 {
@@ -246,8 +289,13 @@ else if ( $action == "new" )
 else if ( $action == "search" )
 	$title = "Search";
 else
+{
 	$title = $page;
-
+	if (TITLE_DATE)
+	{
+		$datetime = "<span style=\"font-size: 10px\">(" . date(TITLE_DATE, filemtime($filename)) . ")</span>";
+	}
+}
 // Disable caching on the client (the iPhone is pretty agressive about this
 // and it can cause problems with the editing function)
 
@@ -266,7 +314,7 @@ print "<link type=\"text/css\" rel=\"stylesheet\" href=\"" . BASE_URI . "/" . CS
 print "<title>$title</title>\n";
 print "</head>\n";
 print "<body>\n";
-print "<div class=\"titlebar\">$title</div>\n";
+print "<div class=\"titlebar\">$title $datetime</div>\n";
 
 printToolbar();
 
