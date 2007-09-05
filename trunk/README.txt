@@ -156,6 +156,7 @@ Other Contributions
   Dan Sandler
   pcdinh
   Victor Rehorst (chuma@chuma.org)
+  abhibeckert
   And others!  Thank you!
   
   
@@ -163,12 +164,13 @@ Other Contributions
 History
 -------
 
-1.0.2 (August 20, 2007)
+1.0.2 (September 5, 2007)
 
+  - 'All Pages' can now be sorted by title or last modified date (vrehorst)
   - Added list of valid upload MIME types and file extensions (abhibeckert)
   - Added config settings to change textarea size (vrehorst)
   - Added page timestamp display support (vrehorst)
-  - Added simple authentication mechanism (stevenf)
+  - Added simple authentication mechanism (stevenf, vrehorst)
 
 1.0.1 (July 16, 2007)
   
