@@ -19,9 +19,9 @@ include_once "config.php";
 session_name("W2");
 session_start();
 
-if ( REQUIRE_PASSWORD && $_SESSION['password'] != W2_PASSWORD )
+if ( REQUIRE_PASSWORD && !isset($_SESSION['password']) )
 {
-	if ( $_POST['p'] == W2_PASSWORD )
+	if (( isset($_POST['p']) ) && ( $_POST['p'] == W2_PASSWORD ))
 		$_SESSION['password'] = W2_PASSWORD;
 	else
 	{
@@ -34,7 +34,7 @@ if ( REQUIRE_PASSWORD && $_SESSION['password'] != W2_PASSWORD )
 
 function printToolbar()
 {
-	global $upage, $page,$action;
+	global $upage, $page,$action,$sortbar;
 
 	print "<div class=\"toolbar\">";
 //	if ($action == "edit")
@@ -48,7 +48,16 @@ function printToolbar()
 
  	print "<a class=\"tool\" href=\"" . BASE_URI . "/index.php?action=all\">All Pages</a> ";
  	print "<a class=\"tool\" href=\"" . BASE_URI . "/index.php\">". DEFAULT_PAGE . "</a>";
+	if (REQUIRE_PASSWORD)
+		print '<a class="tool" href="' . BASE_URI . '/index.php?action=logout">Logout</a>';
 	print "</div>\n";
+	if ($sortbar)
+	{
+		print '<div class="toolbar">';
+		print '<a class="tool first" href="' . BASE_URI . '/index.php?action=all_name">Sort By Name</a>';
+		print '<a class="tool" href="' . BASE_URI . '/index.php?action=all_date">Sort By Date</a>';
+		print "</div>\n";
+	}
 }
 
 function toHTML($inText)
@@ -65,6 +74,17 @@ function toHTML($inText)
 function sanitizeFilename($inFileName)
 {
 	return str_replace(array('..', '~', '/', '\\', ':'), '-', $inFileName);
+}
+
+function destroy_session()
+{
+	if ( isset($_COOKIE[session_name()]) )
+	{	error_log("COOKIE WAS SET");
+		setcookie(session_name(), '', time()-42000, '/');
+	}
+	session_destroy();
+	unset($_SESSION["password"]);
+	unset($_SESSION);
 }
 
 // Support PHP4 by defining file_put_contents if it doesn't already exist
@@ -134,6 +154,12 @@ if ( $action == "edit" || $action == "new" )
 	$html .= "<input id=\"save\" type=\"submit\" value=\"Save\" />\n";
 	$html .= "<input id=\"cancel\" type=\"button\" onclick=\"history.go(-1);\" value=\"Cancel\" /></p>\n";
 	$html .= "</form>\n";
+}
+else if ( $action == "logout" )
+{	error_log("DO LOGOUT");
+	destroy_session();
+	header("Location: " . BASE_URI . "/index.php");
+	exit;
 }
 else if ( $action == "upload" )
 {
@@ -243,6 +269,54 @@ else if ( $action == "all" )
 
 	closedir($dir);
 	$html .= "</ul>\n";
+	$sortbar = true;
+}
+else if ( $action == "all_name" )
+{
+	$html = "<ul>\n";
+	$dir = opendir(BASE_PATH . "/pages");
+	$filelist = array();
+	while ( $file = readdir($dir) )
+	{
+		if ( $file{0} == "." )
+			continue;
+
+		$file = preg_replace("/(.*?)\.txt/", "<a href=\"" . BASE_URI . "/index.php/\\1\">\\1</a>", $file);
+		array_push($filelist, $file);
+	}
+
+	closedir($dir);
+
+	sort($filelist, SORT_LOCALE_STRING);
+	for ($i = 0; $i < count($filelist); $i++)
+	{
+		$html .= "<li>" . $filelist[$i] . "</li>\n";
+	}
+
+	$html .= "</ul>\n";
+	$sortbar = true;
+}
+else if ( $action == "all_date" )
+{
+	$html = "<ul>\n";
+	$dir = opendir(BASE_PATH . "/pages");
+	$filelist = array();
+	while ( $file = readdir($dir) )
+	{
+		if ( $file{0} == "." )
+			continue;
+		$filelist[preg_replace("/(.*?)\.txt/", "<a href=\"" . BASE_URI . "/index.php/\\1\">\\1</a>", $file)] = filemtime(BASE_PATH . "/pages/$file");
+	}
+
+	closedir($dir);
+
+	arsort($filelist, SORT_NUMERIC);
+	foreach ($filelist as $key => $value)
+	{
+		$html .= "<li>$key (" .date(TITLE_DATE,$value) . ")</li>\n";
+	}
+	$html .= "</ul>\n";
+	$sortbar = true;
 }
 else if ( $action == "search" )
 {
@@ -280,7 +354,9 @@ else
 	$html = toHTML($text);
 }
 
-if ( $action == "all" )
+$datetime = '';
+
+if (( $action == "all" ) || ( $action == "all_name") || ($action == "all_date"))
 	$title = "All Pages";
 else if ( $action == "upload" )
 	$title = "Upload Image";
