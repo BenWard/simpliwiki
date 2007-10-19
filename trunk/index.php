@@ -46,7 +46,7 @@ function printToolbar()
 	if ( ! DISABLE_UPLOADS )
 		print "<a class=\"tool\" href=\"" . BASE_URI . "/index.php?action=upload\">Upload</a> ";
 
- 	print "<a class=\"tool\" href=\"" . BASE_URI . "/index.php?action=all\">All Pages</a> ";
+ 	print "<a class=\"tool\" href=\"" . BASE_URI . "/index.php?action=all_name\">All Pages</a> ";
  	print "<a class=\"tool\" href=\"" . BASE_URI . "/index.php\">". DEFAULT_PAGE . "</a>";
 	if (REQUIRE_PASSWORD)
 		print '<a class="tool" href="' . BASE_URI . '/index.php?action=logout">Logout</a>';
@@ -369,7 +369,7 @@ else
 	$title = $page;
 	if (TITLE_DATE)
 	{
-		$datetime = "<span style=\"font-size: 10px\">(" . date(TITLE_DATE, filemtime($filename)) . ")</span>";
+		$datetime = "<span style=\"font-size: 10px\">(" . date(TITLE_DATE, @filemtime($filename)) . ")</span>";
 	}
 }
 // Disable caching on the client (the iPhone is pretty agressive about this
