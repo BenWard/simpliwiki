@@ -156,7 +156,7 @@ Other Contributions
   Dan Sandler
   pcdinh
   Victor Rehorst (chuma@chuma.org)
-  abhibeckert
+  Abhi Beckert
   And others!  Thank you!
   
   
@@ -191,3 +191,4 @@ History
 1.0 (July 13, 2007)
 
   - Initial release!
+
