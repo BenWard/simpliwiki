@@ -57,7 +57,14 @@ define('EDIT_COLS', 40);
 define('REQUIRE_PASSWORD', false);
 
 // The password for the wiki.
+// Replace 'secret' with your password to set your password.
 // Value is a string.
 define('W2_PASSWORD', 'secret');
+
+// Alternate (more secure) password storage.
+// To use a hashed password, Comment out the W2_PASSWORD definition above and uncomment
+// this one, using the result of sha1('your_password') as the value.
+// Value is a string.
+// define('W2_PASSWORD_HASH', 'e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4');
 
 ?>

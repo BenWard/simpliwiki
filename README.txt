@@ -120,6 +120,18 @@ site.  Two lines in config.php control this:
 Set REQUIRE_PASSWORD to true and set W2_PASSWORD to the password you'd like
 to use.
 
+If you do not wish to have your password as plaintext in the config file,
+you can comment out the W2_PASSWORD line and uncomment this line:
+
+  // define('W2_PASSWORD_HASH', 'e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4');
+
+Replace the contents of this define with the result of sha1('your_password').
+to set your password. Tip: on Mac OS X you can run:
+
+  echo -n 'your_password' | openssl sha1
+  
+in Terminal to generate a sha1 hash.
+
 License
 -------
 

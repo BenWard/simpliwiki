@@ -21,8 +21,11 @@ session_start();
 
 if ( REQUIRE_PASSWORD && !isset($_SESSION['password']) )
 {
-	if (( isset($_POST['p']) ) && ( $_POST['p'] == W2_PASSWORD ))
-		$_SESSION['password'] = W2_PASSWORD;
+	if (!defined('W2_PASSWORD_HASH'))
+		define('W2_PASSWORD_HASH', sha1(W2_PASSWORD));
+	
+	if (( isset($_POST['p']) ) && ( sha1($_POST['p']) == W2_PASSWORD_HASH ))
+		$_SESSION['password'] = W2_PASSWORD_HASH;
 	else
 	{
 		print "<html><body><form method=\"post\"><input type=\"password\" name=\"p\"></form></body></html>";
