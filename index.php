@@ -69,6 +69,9 @@ function toHTML($inText)
 
  	$inText = preg_replace("/\[\[(.*?)\]\]/", "<a href=\"" . BASE_URI . "/index.php/\\1\">\\1</a>", $inText);
 	$inText = preg_replace("/\{\{(.*?)\}\}/", "<img src=\"images/\\1\" alt=\"\\1\" />", $inText);
+
+	$inText = preg_replace("/message:(.*?)\s/", "[<a href=\"message:\\1\">email</a>]", $inText);
+
 	$html = Markdown($inText);
 
 	return $html;
@@ -372,7 +375,8 @@ else
 	$title = $page;
 	if (TITLE_DATE)
 	{
-		$datetime = "<span style=\"font-size: 10px\">(" . date(TITLE_DATE, @filemtime($filename)) . ")</span>";
+		$datetime = "<span style=\"font-size: 10px\">" . date(TITLE_DATE, @filemtime($filename)) . "</span>";
+
 	}
 }
 // Disable caching on the client (the iPhone is pretty agressive about this
