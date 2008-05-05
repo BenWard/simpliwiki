@@ -17,9 +17,13 @@ blockquote {
 
 body {
 	font-family: Helvetica, sans-serif;
-	font-size: 13px;
+	font-size: 12px;
 	margin: 0;
 	border: 0;
+}
+
+li {
+	line-height: 1.5em;
 }
 
 h1 {
@@ -42,7 +46,6 @@ hr {
 }
 
 pre {
-	background-color: #eee;
 	margin: 0;
 	padding: 4px;
 	/* stroke each browser so that they wrap lines in the pre tag */
@@ -55,6 +58,7 @@ pre {
 
 textarea {
 	font-family: Courier;
+	width: 95%;
 }
 
 .main {
