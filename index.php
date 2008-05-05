@@ -84,8 +84,9 @@ function sanitizeFilename($inFileName)
 function destroy_session()
 {
 	if ( isset($_COOKIE[session_name()]) )
-	{	error_log("COOKIE WAS SET");
-		setcookie(session_name(), '', time()-42000, '/');
+	{
+		error_log("COOKIE WAS SET");
+		setcookie(session_name(), '', time() - 42000, '/');
 	}
 	session_destroy();
 	unset($_SESSION["password"]);
@@ -96,16 +97,16 @@ function destroy_session()
 
 if ( !function_exists('file_put_contents') )
 {
-    function file_put_contents($n,$d)
+    function file_put_contents($n, $d)
     {
-		$f = @fopen($n,"w");
+		$f = @fopen($n, "w");
 		if ( !$f )
 		{
 			return false;
 		}
 		else
 		{
-			fwrite($f,$d);
+			fwrite($f, $d);
 			fclose($f);
 			return true;
 		}
@@ -161,7 +162,8 @@ if ( $action == "edit" || $action == "new" )
 	$html .= "</form>\n";
 }
 else if ( $action == "logout" )
-{	error_log("DO LOGOUT");
+{
+	error_log("DO LOGOUT");
 	destroy_session();
 	header("Location: " . SELF);
 	exit;
@@ -213,9 +215,16 @@ else if ( $action == "uploaded" )
 else if ( $action == "save" )
 {
 	$newText = trim(stripslashes($_REQUEST['newText']));
-	file_put_contents($filename, $newText);
-	
-	$html = "<p class=\"note\">Saved</p>\n";
+
+	$errLevel = error_reporting(0);
+	$success = file_put_contents($filename, $newText);
+ 	error_reporting($errLevel);
+
+	if ( $success )	
+		$html = "<p class=\"note\">Saved</p>\n";
+	else
+		$html = "<p class=\"note\">Error saving changes! Make sure your web server has write access to " . BASE_PATH . "/pages</p>\n";
+
 	$html .= toHTML($newText);
 }
 else if ( $action == "rename" )
