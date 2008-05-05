@@ -49,7 +49,6 @@ define('TITLE_DATE', 'r');
 // Define the size of the text area in terms of character rows and columns.
 // Values are integers.
 define('EDIT_ROWS', 18);
-define('EDIT_COLS', 40);
 
 // *** Authentication settings ***
 // Is a password required to access this wiki?

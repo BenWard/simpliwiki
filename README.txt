@@ -109,7 +109,6 @@ of the line.
 The size of the edit textarea is controlled by:
 
   define('EDIT_ROWS', 18);
-  define('EDIT_COLS', 40);
 
 W2 has the ability to prompt for a password before allowing access to the
 site.  Two lines in config.php control this:
