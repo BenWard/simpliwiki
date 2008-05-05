@@ -42,25 +42,22 @@ function printToolbar()
 	global $upage, $page,$action,$sortbar;
 
 	print "<div class=\"toolbar\">";
-//	if ($action == "edit")
-//		print "<a class=\"tool first\" href=\"" . BASE_URI . "/index.php?action=rename&amp;page=$upage\">Rename</a> ";
-//	else
-		print "<a class=\"tool first\" href=\"" . BASE_URI . "/index.php?action=edit&amp;page=$upage\">Edit</a> ";
-	print "<a class=\"tool\" href=\"" . BASE_URI . "/index.php?action=new\">New</a> ";
+	print "<a class=\"tool first\" href=\"" . SELF . "?action=edit&amp;page=$upage\">Edit</a> ";
+	print "<a class=\"tool\" href=\"" . SELF . "?action=new\">New</a> ";
 
 	if ( ! DISABLE_UPLOADS )
-		print "<a class=\"tool\" href=\"" . BASE_URI . "/index.php?action=upload\">Upload</a> ";
+		print "<a class=\"tool\" href=\"" . SELF . "?action=upload\">Upload</a> ";
 
- 	print "<a class=\"tool\" href=\"" . BASE_URI . "/index.php?action=all_name\">All Pages</a> ";
- 	print "<a class=\"tool\" href=\"" . BASE_URI . "/index.php\">". DEFAULT_PAGE . "</a>";
+ 	print "<a class=\"tool\" href=\"" . SELF . "?action=all_name\">All Pages</a> ";
+ 	print "<a class=\"tool\" href=\"" . SELF . "\">". DEFAULT_PAGE . "</a>";
 	if (REQUIRE_PASSWORD)
-		print '<a class="tool" href="' . BASE_URI . '/index.php?action=logout">Logout</a>';
+		print '<a class="tool" href="' . SELF . '?action=logout">Logout</a>';
 	print "</div>\n";
 	if ($sortbar)
 	{
 		print '<div class="toolbar">';
-		print '<a class="tool first" href="' . BASE_URI . '/index.php?action=all_name">Sort By Name</a>';
-		print '<a class="tool" href="' . BASE_URI . '/index.php?action=all_date">Sort By Date</a>';
+		print '<a class="tool first" href="' . SELF . '?action=all_name">Sort By Name</a>';
+		print '<a class="tool" href="' . SELF . '?action=all_date">Sort By Date</a>';
 		print "</div>\n";
 	}
 }
@@ -69,7 +66,7 @@ function toHTML($inText)
 {
 	global $page;
 
- 	$inText = preg_replace("/\[\[(.*?)\]\]/", "<a href=\"" . BASE_URI . "/index.php/\\1\">\\1</a>", $inText);
+ 	$inText = preg_replace("/\[\[(.*?)\]\]/", "<a href=\"" . SELF . "/\\1\">\\1</a>", $inText);
 	$inText = preg_replace("/\{\{(.*?)\}\}/", "<img src=\"images/\\1\" alt=\"\\1\" />", $inText);
 
 	$inText = preg_replace("/message:(.*?)\s/", "[<a href=\"message:\\1\">email</a>]", $inText);
@@ -146,7 +143,7 @@ else
 
 if ( $action == "edit" || $action == "new" )
 {
-	$formAction = BASE_URI . (($action == 'edit') ? "/index.php/$page" : "/index.php");
+	$formAction = SELF . (($action == 'edit') ? "/$page" : "");
 	$html = "<form id=\"edit\" method=\"post\" action=\"$formAction\">\n";
 
 	if ( $action == "edit" )
@@ -166,7 +163,7 @@ if ( $action == "edit" || $action == "new" )
 else if ( $action == "logout" )
 {	error_log("DO LOGOUT");
 	destroy_session();
-	header("Location: " . BASE_URI . "/index.php");
+	header("Location: " . SELF);
 	exit;
 }
 else if ( $action == "upload" )
@@ -177,7 +174,7 @@ else if ( $action == "upload" )
 	}
 	else
 	{
-		$html = "<form id=\"upload\" method=\"post\" action=\"" . BASE_URI . "/index.php\" enctype=\"multipart/form-data\"><p>\n";
+		$html = "<form id=\"upload\" method=\"post\" action=\"" . SELF . "\" enctype=\"multipart/form-data\"><p>\n";
 		$html .= "<input type=\"hidden\" name=\"action\" value=\"uploaded\" />";
 		$html .= "<input id=\"file\" type=\"file\" name=\"userfile\" />\n";
 		$html .= "<input id=\"upload\" type=\"submit\" value=\"Upload\" />\n";
@@ -223,7 +220,7 @@ else if ( $action == "save" )
 }
 else if ( $action == "rename" )
 {
-	$html = "<form id=\"rename\" method=\"post\" action=\"" . BASE_URI . "/index.php\">";
+	$html = "<form id=\"rename\" method=\"post\" action=\"" . SELF . "\">";
 	$html .= "<p>Title: <input id=\"title\" type=\"text\" name=\"page\" value=\"" . htmlspecialchars($page) . "\" />";
 	$html .= "<input id=\"rename\" type=\"submit\" value=\"Rename\">";
 	$html .= "<input id=\"cancel\" type=\"button\" onclick=\"history.go(-1);\" value=\"Cancel\" />\n";
@@ -271,7 +268,7 @@ else if ( $action == "all" )
 		if ( $file{0} == "." )
 			continue;
 
-		$file = preg_replace("/(.*?)\.txt/", "<a href=\"" . BASE_URI . "/index.php/\\1\">\\1</a>", $file);
+		$file = preg_replace("/(.*?)\.txt/", "<a href=\"" . SELF . "/\\1\">\\1</a>", $file);
 		$html .= "<li>$file</li>\n";
 	}
 
@@ -289,7 +286,7 @@ else if ( $action == "all_name" )
 		if ( $file{0} == "." )
 			continue;
 
-		$file = preg_replace("/(.*?)\.txt/", "<a href=\"" . BASE_URI . "/index.php/\\1\">\\1</a>", $file);
+		$file = preg_replace("/(.*?)\.txt/", "<a href=\"" . SELF . "/\\1\">\\1</a>", $file);
 		array_push($filelist, $file);
 	}
 
@@ -313,7 +310,7 @@ else if ( $action == "all_date" )
 	{
 		if ( $file{0} == "." )
 			continue;
-		$filelist[preg_replace("/(.*?)\.txt/", "<a href=\"" . BASE_URI . "/index.php/\\1\">\\1</a>", $file)] = filemtime(BASE_PATH . "/pages/$file");
+		$filelist[preg_replace("/(.*?)\.txt/", "<a href=\"" . SELF . "/\\1\">\\1</a>", $file)] = filemtime(BASE_PATH . "/pages/$file");
 	}
 
 	closedir($dir);
@@ -346,7 +343,7 @@ else if ( $action == "search" )
 			if ( eregi($q, $text) )
 			{
 				++$matches;
-				$file = preg_replace("/(.*?)\.txt/", "<a href=\"" . BASE_URI . "/index.php/\\1\">\\1</a>", $file);
+				$file = preg_replace("/(.*?)\.txt/", "<a href=\"" . SELF . "/\\1\">\\1</a>", $file);
 				$html .= "<li>$file</li>\n";
 			}
 		}
@@ -409,7 +406,7 @@ print "</div>\n";
 
 printToolbar();
 
-print "<form method=\"post\" action=\"" . BASE_URI . "/index.php?action=search\">\n";
+print "<form method=\"post\" action=\"" . SELF . "?action=search\">\n";
 print "<div class=\"searchbar\">Search: <input id=\"search\" type=\"text\" name=\"q\" /></div></form>\n";
 print "</body>\n";
 print "</html>\n";

@@ -19,6 +19,10 @@ define('BASE_PATH', getcwd());					// Omit any trailing slash
 // Value is a string, a well-formed URI to be precise.
 define('BASE_URI', str_replace("/index.php", "", $_SERVER['SCRIPT_NAME']));	// Omit any trailing slash
 
+// SELF is the path component of the URL to the main script,
+// such as /w2/index.php
+define('SELF', $_SERVER['SCRIPT_NAME']);
+
 // The name of the page to show as the "Home" page.
 // Value is a string, the title of a page (case-sensitive!)
 define('DEFAULT_PAGE', 'Home');
