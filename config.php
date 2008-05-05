@@ -48,7 +48,7 @@ define('VALID_UPLOAD_EXTS', 'jpg,jpeg,png,gif,pdf,zip,dmg');
 // *** Interface settings ***
 // The format to use when displaying page modification times.
 // See the manual for the PHP 'date()' function for the specification: http://php.net/manual/en/function.date.php
-define('TITLE_DATE', 'r');
+define('TITLE_DATE', 'j-M-Y g:i A');
 
 // Define the size of the text area in terms of character rows and columns.
 // Values are integers.
