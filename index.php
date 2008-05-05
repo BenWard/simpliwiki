@@ -138,7 +138,7 @@ if ( file_exists($filename) )
 }
 else
 {
-	if ( $action != "save" )
+	if ( $action != "save" && $action != "all_name" && $action != "all_date" && $action != "upload" && $action != "new" && $action != "logout" && $action != "uploaded" )
 		$action = "edit";
 }
 
