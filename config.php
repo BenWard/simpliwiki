@@ -17,7 +17,7 @@ define('BASE_PATH', getcwd());					// Omit any trailing slash
 
 // The base URI path to w2wiki.  You should change this if it doesn't work automatically!
 // Value is a string, a well-formed URI to be precise.
-define('BASE_URI', str_replace("index.php", "", $_SERVER['SCRIPT_NAME']));	// Omit any trailing slash
+define('BASE_URI', str_replace("/index.php", "", $_SERVER['SCRIPT_NAME']));	// Omit any trailing slash
 
 // The name of the page to show as the "Home" page.
 // Value is a string, the title of a page (case-sensitive!)
