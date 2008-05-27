@@ -1,9 +1,9 @@
 <?php
 
 /*
- * W2 1.0.2
+ * W2 1.1
  *
- * Copyright (C) 2007 Steven Frank <http://stevenf.com/>
+ * Copyright (C) 2007-2008 Steven Frank <http://stevenf.com/>
  * Code may be re-used as long as the above copyright notice is retained.
  * See README.txt for full details.
  *
