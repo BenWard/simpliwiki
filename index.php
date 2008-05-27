@@ -16,21 +16,45 @@ include_once "markdown.php";
 
 include_once "config.php";
 
-session_set_cookie_params(60 * 60 * 24 * 30);
+ini_set('session.gc_maxlifetime', 60 * 60 * 24 * 30);
 
+session_set_cookie_params(60 * 60 * 24 * 30);
 session_name("W2");
 session_start();
 
+if ( count($allowedIPs) > 0 )
+{
+	$ip = $_SERVER['REMOTE_ADDR'];
+	$accepted = false;
+	
+	foreach ( $allowedIPs as $allowed )
+	{
+		if ( strncmp($allowed, $ip, strlen($allowed)) == 0 )
+		{
+			$accepted = true;
+			break;
+		}
+	}
+	
+	if ( !$accepted )
+	{
+		print "<html><body>IP $ip not allowed";
+		print "</body></html>";
+		exit;
+	}
+}
+
 if ( REQUIRE_PASSWORD && !isset($_SESSION['password']) )
 {
-	if (!defined('W2_PASSWORD_HASH'))
+	if ( !defined('W2_PASSWORD_HASH') )
 		define('W2_PASSWORD_HASH', sha1(W2_PASSWORD));
 	
-	if (( isset($_POST['p']) ) && ( sha1($_POST['p']) == W2_PASSWORD_HASH ))
+	if ( (isset($_POST['p'])) && (sha1($_POST['p']) == W2_PASSWORD_HASH) )
 		$_SESSION['password'] = W2_PASSWORD_HASH;
 	else
 	{
-		print "<html><body><form method=\"post\"><input type=\"password\" name=\"p\"></form></body></html>";
+		print "<html><body><form method=\"post\"><input type=\"password\" name=\"p\"></form>";
+		print "</body></html>";
 		exit;
 	}
 }
@@ -39,27 +63,23 @@ if ( REQUIRE_PASSWORD && !isset($_SESSION['password']) )
 
 function printToolbar()
 {
-	global $upage, $page,$action,$sortbar;
+	global $upage, $page, $action;
 
 	print "<div class=\"toolbar\">";
 	print "<a class=\"tool first\" href=\"" . SELF . "?action=edit&amp;page=$upage\">Edit</a> ";
 	print "<a class=\"tool\" href=\"" . SELF . "?action=new\">New</a> ";
 
-	if ( ! DISABLE_UPLOADS )
+	if ( !DISABLE_UPLOADS )
 		print "<a class=\"tool\" href=\"" . SELF . "?action=upload\">Upload</a> ";
 
- 	print "<a class=\"tool\" href=\"" . SELF . "?action=all_name\">All Pages</a> ";
+ 	print "<a class=\"tool\" href=\"" . SELF . "?action=all_name\">All</a> ";
+	print "<a class=\"tool\" href=\"" . SELF . "?action=all_date\">Recent</a> ";
  	print "<a class=\"tool\" href=\"" . SELF . "\">". DEFAULT_PAGE . "</a>";
-	if (REQUIRE_PASSWORD)
+ 	
+	if ( REQUIRE_PASSWORD )
 		print '<a class="tool" href="' . SELF . '?action=logout">Logout</a>';
+		
 	print "</div>\n";
-	if ($sortbar)
-	{
-		print '<div class="toolbar">';
-		print '<a class="tool first" href="' . SELF . '?action=all_name">Sort By Name</a>';
-		print '<a class="tool" href="' . SELF . '?action=all_date">Sort By Date</a>';
-		print "</div>\n";
-	}
 }
 
 function toHTML($inText)
@@ -68,7 +88,6 @@ function toHTML($inText)
 
  	$inText = preg_replace("/\[\[(.*?)\]\]/", "<a href=\"" . SELF . "/\\1\">\\1</a>", $inText);
 	$inText = preg_replace("/\{\{(.*?)\}\}/", "<img src=\"images/\\1\" alt=\"\\1\" />", $inText);
-
 	$inText = preg_replace("/message:(.*?)\s/", "[<a href=\"message:\\1\">email</a>]", $inText);
 
 	$html = Markdown($inText);
@@ -85,7 +104,6 @@ function destroy_session()
 {
 	if ( isset($_COOKIE[session_name()]) )
 	{
-		error_log("COOKIE WAS SET");
 		setcookie(session_name(), '', time() - 42000, '/');
 	}
 	session_destroy();
@@ -138,8 +156,10 @@ if ( file_exists($filename) )
 }
 else
 {
-	if ( $action != "save" && $action != "all_name" && $action != "all_date" && $action != "upload" && $action != "new" && $action != "logout" && $action != "uploaded" )
+	if ( $action != "save" && $action != "all_name" && $action != "all_date" && $action != "upload" && $action != "new" && $action != "logout" && $action != "uploaded" && $action != "search" )
+	{
 		$action = "edit";
+	}
 }
 
 if ( $action == "edit" || $action == "new" )
@@ -163,7 +183,6 @@ if ( $action == "edit" || $action == "new" )
 }
 else if ( $action == "logout" )
 {
-	error_log("DO LOGOUT");
 	destroy_session();
 	header("Location: " . SELF);
 	exit;
@@ -241,18 +260,18 @@ else if ( $action == "renamed" )
 {
 	$pp = $_REQUEST['prevpage'];
 	$pg = $_REQUEST['page'];
-	error_log("RENAMING PAGE $pp -> $pg");
+
 	$prevpage = sanitizeFilename($pp);
 	$prevpage = urlencode($prevpage);
 	
 	$prevfilename = BASE_PATH . "/pages/$prevpage.txt";
 
-	if (rename($prevfilename, $filename))
+	if ( rename($prevfilename, $filename) )
 	{
 		// Success.  Change links in all pages to point to new page
-		if ($dh = opendir(BASE_PATH . "/pages/"))
+		if ( $dh = opendir(BASE_PATH . "/pages/") )
 		{
-			while (($file = readdir($dh)) !== false)
+			while ( ($file = readdir($dh)) !== false )
 			{
 				$content = file_get_contents($file);
 				$pattern = "/\[\[" . $pp . "\]\]/g";
@@ -263,9 +282,8 @@ else if ( $action == "renamed" )
 	}
 	else
 	{
-		
+		$html = "<p class=\"note\">Error renaming file</p>\n";
 	}
-
 }
 else if ( $action == "all" )
 {
@@ -283,7 +301,6 @@ else if ( $action == "all" )
 
 	closedir($dir);
 	$html .= "</ul>\n";
-	$sortbar = true;
 }
 else if ( $action == "all_name" )
 {
@@ -301,14 +318,13 @@ else if ( $action == "all_name" )
 
 	closedir($dir);
 
-	sort($filelist, SORT_LOCALE_STRING);
+	natcasesort($filelist);
 	for ($i = 0; $i < count($filelist); $i++)
 	{
 		$html .= "<li>" . $filelist[$i] . "</li>\n";
 	}
 
 	$html .= "</ul>\n";
-	$sortbar = true;
 }
 else if ( $action == "all_date" )
 {
@@ -319,6 +335,7 @@ else if ( $action == "all_date" )
 	{
 		if ( $file{0} == "." )
 			continue;
+			
 		$filelist[preg_replace("/(.*?)\.txt/", "<a href=\"" . SELF . "/\\1\">\\1</a>", $file)] = filemtime(BASE_PATH . "/pages/$file");
 	}
 
@@ -327,10 +344,9 @@ else if ( $action == "all_date" )
 	arsort($filelist, SORT_NUMERIC);
 	foreach ($filelist as $key => $value)
 	{
-		$html .= "<li>$key (" .date(TITLE_DATE,$value) . ")</li>\n";
+		$html .= "<li>$key <span style=\"font-size: 10px\">(" . date(TITLE_DATE, $value) . ")</span></li>\n";
 	}
 	$html .= "</ul>\n";
-	$sortbar = true;
 }
 else if ( $action == "search" )
 {
@@ -381,12 +397,12 @@ else if ( $action == "search" )
 else
 {
 	$title = $page;
-	if (TITLE_DATE)
+	if ( TITLE_DATE )
 	{
 		$datetime = "<span style=\"font-size: 10px\">" . date(TITLE_DATE, @filemtime($filename)) . "</span>";
-
 	}
 }
+
 // Disable caching on the client (the iPhone is pretty agressive about this
 // and it can cause problems with the editing function)
 
@@ -405,15 +421,13 @@ print "<link type=\"text/css\" rel=\"stylesheet\" href=\"" . BASE_URI . "/" . CS
 print "<title>$title</title>\n";
 print "</head>\n";
 print "<body>\n";
-print "<div class=\"titlebar\">$title $datetime</div>\n";
+print "<div class=\"titlebar\">$title <span style=\"font-weight: normal;\">$datetime</span></div>\n";
 
 printToolbar();
 
 print "<div class=\"main\">\n";
 print "$html\n";
 print "</div>\n";
-
-printToolbar();
 
 print "<form method=\"post\" action=\"" . SELF . "?action=search\">\n";
 print "<div class=\"searchbar\">Search: <input id=\"search\" type=\"text\" name=\"q\" /></div></form>\n";

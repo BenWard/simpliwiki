@@ -70,4 +70,9 @@ define('W2_PASSWORD', 'secret');
 // Value is a string.
 // define('W2_PASSWORD_HASH', 'e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4');
 
+// Allowed IPs array.  If non-empty, specifies IPs that are allowed access. 
+// Ranges should work too, such as "32." for AT&T's entire subnet
+// If empty, all IPs are allowed.
+$allowedIPs = array();
+
 ?>
