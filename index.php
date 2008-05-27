@@ -148,7 +148,7 @@ $upage = urlencode($page);
 if ( $page == "" )
 	$page = DEFAULT_PAGE;
 
-$filename = BASE_PATH . "/pages/$page.txt";
+$filename = PAGES_PATH . "/$page.txt";
 
 if ( file_exists($filename) )
 {
@@ -242,7 +242,7 @@ else if ( $action == "save" )
 	if ( $success )	
 		$html = "<p class=\"note\">Saved</p>\n";
 	else
-		$html = "<p class=\"note\">Error saving changes! Make sure your web server has write access to " . BASE_PATH . "/pages</p>\n";
+		$html = "<p class=\"note\">Error saving changes! Make sure your web server has write access to " . PAGES_PATH . "</p>\n";
 
 	$html .= toHTML($newText);
 }
@@ -264,12 +264,12 @@ else if ( $action == "renamed" )
 	$prevpage = sanitizeFilename($pp);
 	$prevpage = urlencode($prevpage);
 	
-	$prevfilename = BASE_PATH . "/pages/$prevpage.txt";
+	$prevfilename = PAGES_PATH . "/$prevpage.txt";
 
 	if ( rename($prevfilename, $filename) )
 	{
 		// Success.  Change links in all pages to point to new page
-		if ( $dh = opendir(BASE_PATH . "/pages/") )
+		if ( $dh = opendir(PAGES_PATH) )
 		{
 			while ( ($file = readdir($dh)) !== false )
 			{
@@ -288,7 +288,7 @@ else if ( $action == "renamed" )
 else if ( $action == "all" )
 {
 	$html = "<ul>\n";
-	$dir = opendir(BASE_PATH . "/pages");
+	$dir = opendir(PAGES_PATH);
 	
 	while ( $file = readdir($dir) )
 	{
@@ -305,7 +305,7 @@ else if ( $action == "all" )
 else if ( $action == "all_name" )
 {
 	$html = "<ul>\n";
-	$dir = opendir(BASE_PATH . "/pages");
+	$dir = opendir(PAGES_PATH);
 	$filelist = array();
 	while ( $file = readdir($dir) )
 	{
@@ -329,14 +329,14 @@ else if ( $action == "all_name" )
 else if ( $action == "all_date" )
 {
 	$html = "<ul>\n";
-	$dir = opendir(BASE_PATH . "/pages");
+	$dir = opendir(PAGES_PATH);
 	$filelist = array();
 	while ( $file = readdir($dir) )
 	{
 		if ( $file{0} == "." )
 			continue;
 			
-		$filelist[preg_replace("/(.*?)\.txt/", "<a href=\"" . SELF . "/\\1\">\\1</a>", $file)] = filemtime(BASE_PATH . "/pages/$file");
+		$filelist[preg_replace("/(.*?)\.txt/", "<a href=\"" . SELF . "/\\1\">\\1</a>", $file)] = filemtime(PAGES_PATH . "/$file");
 	}
 
 	closedir($dir);
@@ -356,14 +356,14 @@ else if ( $action == "search" )
 
 	if ( trim($q) != "" )
 	{
-		$dir = opendir(BASE_PATH . "/pages");
+		$dir = opendir(PAGES_PATH);
 		
 		while ( $file = readdir($dir) )
 		{
 			if ( $file{0} == "." )
 				continue;
 
-			$text = file_get_contents(BASE_PATH . "/pages/$file");
+			$text = file_get_contents(PAGES_PATH . "/$file");
 			
 			if ( eregi($q, $text) )
 			{

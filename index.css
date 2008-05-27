@@ -16,8 +16,8 @@ blockquote {
 }
 
 body {
-	font-family: Helvetica, sans-serif;
-	font-size: 12px;
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 13px;
 	margin: 0;
 	border: 0;
 }
@@ -57,7 +57,7 @@ pre {
 }
 
 textarea {
-	font-family: Courier;
+	font-family: Courier, monospace;
 	width: 95%;
 }
 
@@ -75,20 +75,22 @@ textarea {
 }
 
 .searchbar {
-	background-color: #ccddcc;
+	background-color: #222;
+	color: #fff;
 	font-size: 12px;
 	padding: 4px;
 }
 
 .titlebar {
-	background-color: #ccddcc;
+	background-color: #222;
+	color: #fff;
 	font-size: 18px;
 	font-weight: bold;
 	padding: 4px;
 }
 
 .toolbar {
-	background-color: #ddeedd;
+	background-color: #777;
 	font-size: 12px;
 	padding: 4px;
 }
@@ -96,7 +98,6 @@ textarea {
 a.tool {
 	padding-right: 8px;
 	margin: 0;
+	color: #fff;
 }
 
-a.tool:hover {
-}
