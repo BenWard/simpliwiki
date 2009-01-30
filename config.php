@@ -26,6 +26,11 @@ define('BASE_URI', str_replace("/index.php", "", $_SERVER['SCRIPT_NAME']));	// O
 // such as /w2/index.php
 define('SELF', $_SERVER['SCRIPT_NAME']);
 
+// VIEW is used when your server spawns PHP as a CGI instead of an
+// internal module.  You can fix the ugly long URL with mod_rewrite.
+//define('VIEW', '?action=view&page=');
+define('VIEW', '');
+
 // The name of the page to show as the "Home" page.
 // Value is a string, the title of a page (case-sensitive!)
 define('DEFAULT_PAGE', 'Home');
@@ -77,5 +82,9 @@ define('W2_PASSWORD', 'secret');
 // Ranges should work too, such as "32." for AT&T's entire subnet
 // If empty, all IPs are allowed.
 $allowedIPs = array();
+
+// Autolink feature will automatically convert page titles into links
+// to the named page. (experimental)
+define(AUTOLINK_PAGE_TITLES, true);
 
 ?>

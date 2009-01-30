@@ -1,13 +1,14 @@
 <?php
 
 /*
- * W2 1.1
+ * W2
  *
- * Copyright (C) 2007-2008 Steven Frank <http://stevenf.com/>
+ * Copyright (C) 2007-2009 Steven Frank <http://stevenf.com/>
  * Code may be re-used as long as the above copyright notice is retained.
  * See README.txt for full details.
  *
  * Written with Coda: <http://panic.com/coda/>
+ *
  */
  
 include_once "markdown.php";
@@ -53,7 +54,7 @@ if ( REQUIRE_PASSWORD && !isset($_SESSION['password']) )
 		$_SESSION['password'] = W2_PASSWORD_HASH;
 	else
 	{
-		print "<html><body><form method=\"post\"><input type=\"password\" name=\"p\"></form>";
+		print "<html><body><form method=\"post\"><input type=\"password\" name=\"p\"><input type=\"submit\" value=\"Go\"></form>";
 		print "</body></html>";
 		exit;
 	}
@@ -70,7 +71,7 @@ function printToolbar()
 	print "<a class=\"tool\" href=\"" . SELF . "?action=new\">New</a> ";
 
 	if ( !DISABLE_UPLOADS )
-		print "<a class=\"tool\" href=\"" . SELF . "?action=upload\">Upload</a> ";
+		print "<a class=\"tool\" href=\"" . SELF . VIEW . "?action=upload\">Upload</a> ";
 
  	print "<a class=\"tool\" href=\"" . SELF . "?action=all_name\">All</a> ";
 	print "<a class=\"tool\" href=\"" . SELF . "?action=all_date\">Recent</a> ";
@@ -82,11 +83,51 @@ function printToolbar()
 	print "</div>\n";
 }
 
+
+function descLengthSort($val_1, $val_2) 
+{ 
+	$retVal = 0;
+
+	$firstVal = strlen($val_1); 
+	$secondVal = strlen($val_2);
+
+	if ( $firstVal > $secondVal ) 
+		$retVal = -1; 
+	
+	else if ( $firstVal < $secondVal ) 
+		$retVal = 1; 
+
+	return $retVal; 
+}
+
+
+
 function toHTML($inText)
 {
 	global $page;
+	
+	$dir = opendir(PAGES_PATH);
+	while ( $filename = readdir($dir) )
+	{
+		if ( $filename{0} == '.' )
+			continue;
+			
+		$filename = preg_replace("/(.*?)\.txt/", "\\1", $filename);
+		$filenames[] = $filename;
+	}
+	closedir($dir);
+	
+	uasort($filenames, "descLengthSort"); 
 
- 	$inText = preg_replace("/\[\[(.*?)\]\]/", "<a href=\"" . SELF . "/\\1\">\\1</a>", $inText);
+	if ( AUTOLINK_PAGE_TITLES )
+	{	
+		foreach ( $filenames as $filename )
+		{
+	 		$inText = preg_replace("/(?<![\>\[\/])($filename)(?!\]\>)/im", "<a href=\"" . SELF . VIEW . "/$filename\">\\1</a>", $inText);
+		}
+	}
+	
+ 	$inText = preg_replace("/\[\[(.*?)\]\]/", "<a href=\"" . SELF . VIEW . "/\\1\">\\1</a>", $inText);
 	$inText = preg_replace("/\{\{(.*?)\}\}/", "<img src=\"images/\\1\" alt=\"\\1\" />", $inText);
 	$inText = preg_replace("/message:(.*?)\s/", "[<a href=\"message:\\1\">email</a>]", $inText);
 
@@ -136,7 +177,7 @@ if ( !function_exists('file_put_contents') )
 if ( isset($_REQUEST['action']) )
 	$action = $_REQUEST['action'];
 else 
-	$action = '';
+	$action = 'view';
 
 if ( preg_match('@^/@', @$_SERVER["PATH_INFO"]) ) 
 	$page = sanitizeFilename(substr($_SERVER["PATH_INFO"], 1));
@@ -156,7 +197,7 @@ if ( file_exists($filename) )
 }
 else
 {
-	if ( $action != "save" && $action != "all_name" && $action != "all_date" && $action != "upload" && $action != "new" && $action != "logout" && $action != "uploaded" && $action != "search" )
+	if ( $action != "save" && $action != "all_name" && $action != "all_date" && $action != "upload" && $action != "new" && $action != "logout" && $action != "uploaded" && $action != "search" && $action != "view" )
 	{
 		$action = "edit";
 	}
@@ -295,7 +336,7 @@ else if ( $action == "all" )
 		if ( $file{0} == "." )
 			continue;
 
-		$file = preg_replace("/(.*?)\.txt/", "<a href=\"" . SELF . "/\\1\">\\1</a>", $file);
+		$file = preg_replace("/(.*?)\.txt/", "<a href=\"" . SELF . VIEW . "/\\1\">\\1</a>", $file);
 		$html .= "<li>$file</li>\n";
 	}
 
@@ -312,7 +353,7 @@ else if ( $action == "all_name" )
 		if ( $file{0} == "." )
 			continue;
 
-		$file = preg_replace("/(.*?)\.txt/", "<a href=\"" . SELF . "/\\1\">\\1</a>", $file);
+		$file = preg_replace("/(.*?)\.txt/", "<a href=\"" . SELF . VIEW . "/\\1\">\\1</a>", $file);
 		array_push($filelist, $file);
 	}
 
@@ -336,7 +377,7 @@ else if ( $action == "all_date" )
 		if ( $file{0} == "." )
 			continue;
 			
-		$filelist[preg_replace("/(.*?)\.txt/", "<a href=\"" . SELF . "/\\1\">\\1</a>", $file)] = filemtime(PAGES_PATH . "/$file");
+		$filelist[preg_replace("/(.*?)\.txt/", "<a href=\"" . SELF . VIEW . "/\\1\">\\1</a>", $file)] = filemtime(PAGES_PATH . "/$file");
 	}
 
 	closedir($dir);
@@ -368,7 +409,7 @@ else if ( $action == "search" )
 			if ( eregi($q, $text) )
 			{
 				++$matches;
-				$file = preg_replace("/(.*?)\.txt/", "<a href=\"" . SELF . "/\\1\">\\1</a>", $file);
+				$file = preg_replace("/(.*?)\.txt/", "<a href=\"" . SELF . VIEW . "/\\1\">\\1</a>", $file);
 				$html .= "<li>$file</li>\n";
 			}
 		}
