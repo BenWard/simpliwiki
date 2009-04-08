@@ -17,10 +17,10 @@ include_once "markdown.php";
 
 include_once "config.php";
 
-ini_set('session.gc_maxlifetime', 60 * 60 * 24 * 30);
+ini_set('session.gc_maxlifetime', W2_SESSION_LIFETIME);
 
-session_set_cookie_params(60 * 60 * 24 * 30);
-session_name("W2");
+session_set_cookie_params(W2_SESSION_LIFETIME);
+session_name(W2_SESSION_NAME);
 session_start();
 
 if ( count($allowedIPs) > 0 )
@@ -39,7 +39,7 @@ if ( count($allowedIPs) > 0 )
 	
 	if ( !$accepted )
 	{
-		print "<html><body>IP $ip not allowed";
+		print "<html><body>Access from IP address $ip is not allowed";
 		print "</body></html>";
 		exit;
 	}
@@ -429,15 +429,20 @@ $datetime = '';
 
 if (( $action == "all" ) || ( $action == "all_name") || ($action == "all_date"))
 	$title = "All Pages";
+	
 else if ( $action == "upload" )
 	$title = "Upload Image";
+
 else if ( $action == "new" )
 	$title = "New";
+
 else if ( $action == "search" )
 	$title = "Search";
+
 else
 {
 	$title = $page;
+
 	if ( TITLE_DATE )
 	{
 		$datetime = "<span style=\"font-size: 10px\">" . date(TITLE_DATE, @filemtime($filename)) . "</span>";

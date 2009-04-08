@@ -104,9 +104,9 @@ define('EDIT_ROWS', 18);
 define('AUTOLINK_PAGE_TITLES', true);
 
 
-// -----------------------
-// Authentication settings
-// -----------------------
+// -----------------------------
+// Security and session settings
+// -----------------------------
 
 // REQUIRE_PASSWORD
 //
@@ -137,5 +137,17 @@ define('W2_PASSWORD_HASH', '');
 // If empty, all IPs are allowed.
 
 $allowedIPs = array();
+
+// W2_SESSION_LIFETIME
+// 
+// How long before a login session expires?  Default is 30 days
+
+define('W2_SESSION_LIFETIME', 60 * 60 * 24 * 30);
+
+// W2_SESSION_NAME
+//
+// Name for session (used in the cookie)
+
+define('W2_SESSION_NAME', 'W2');
 
 ?>
