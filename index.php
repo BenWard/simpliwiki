@@ -47,7 +47,7 @@ if ( count($allowedIPs) > 0 )
 
 if ( REQUIRE_PASSWORD && !isset($_SESSION['password']) )
 {
-	if ( !defined('W2_PASSWORD_HASH') )
+	if ( !defined('W2_PASSWORD_HASH') || W2_PASSWORD_HASH == '' )
 		define('W2_PASSWORD_HASH', sha1(W2_PASSWORD));
 	
 	if ( (isset($_POST['p'])) && (sha1($_POST['p']) == W2_PASSWORD_HASH) )
