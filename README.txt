@@ -1,14 +1,16 @@
 W2: Simple web notes
 ====================
 
-Copyright (C) 2007 Steven Frank <http://stevenf.com/>
-Additional acknowledgements at bottom of file.
+<http://code.google.com/p/w2wiki/>
+
+Copyright (C) 2007-2009 Steven Frank <http://stevenf.com/> and 
+contributors
 
 
 Design Goals
 ------------
 
-1. Extremely compact (only three PHP files and one CSS file)
+1. Extremely compact (only a few PHP files and a CSS file)
 2. Minimal execution time, for quickest possible mobile access (iPhone!)
 3. Very simple, easy-to-read code
 4. Elegant markup syntax for notes, with linking and image support
@@ -27,23 +29,21 @@ Installation
    look something like this:
    
    w2/
+       config.php
+       images/
        index.css 
        index.php
-       config.php
        markdown.php
-       images/
        pages/
            Home.txt
            Markdown Syntax.txt
+       README.txt
        
 3. Make sure that the "images" and "pages" directories are writable by your
    web server process.
    
-4. Edit the following line in config.php to match your server configuration:
-   
-   define(BASE_URI, 'http://stevenf.com/w2');	
-   
-   Leave trailing slashes off.
+4. You may or may not need to edit config.php.  When you're ready, look in
+   there for many additional configuration options.
 
 You should now be ready to access your W2 installation.
 
@@ -60,7 +60,9 @@ While viewing a page:
   [Upload] allows you to upload an image to the images/ directory for later
   use with the {{image}} tag.  (see "Editing Syntax" below for more info)
 
-  [All] shows you a list of all pages.	
+  [All] shows you a list of all pages.
+  
+  [Recent] shows you a list of pages, most recently edited first.
 
   [Home] returns you to the Home page.
 
@@ -88,6 +90,10 @@ Two additional syntax features have been added:
 Optional Configuration
 ----------------------
 
+The file config.php contains many options for you to customize your W2 setup.
+
+A few examples:
+
 The following line in config.php may be changed if you do not want the 
 default page to be named 'Home':
 
@@ -97,14 +103,6 @@ The following line in config.php may be changed if you'd like to use a
 different CSS stylesheet:
 
   define('CSS_FILE', 'index.css');
-
-To control the format of the page timestamp, change the value of:
-
-  define('TITLE_DATE', 'r');
-
-PHP date & time format is used - see http://php.net/manual/en/function.date.php
-To disable the page timestamp completely, put two slashes at the beginning
-of the line.
 
 The size of the edit textarea is controlled by:
 
@@ -119,17 +117,6 @@ site.  Two lines in config.php control this:
 Set REQUIRE_PASSWORD to true and set W2_PASSWORD to the password you'd like
 to use.
 
-If you do not wish to have your password as plaintext in the config file,
-you can comment out the W2_PASSWORD line and uncomment this line:
-
-  // define('W2_PASSWORD_HASH', 'e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4');
-
-Replace the contents of this define with the result of sha1('your_password').
-to set your password. Tip: on Mac OS X you can run:
-
-  echo -n 'your_password' | openssl sha1
-  
-in Terminal to generate a sha1 hash.
 
 License
 -------
@@ -174,6 +161,11 @@ Other Contributions
   
 History
 -------
+
+1.1 (May 2008)
+
+  - Support for web servers that run PHP as a CGI, rather than a module
+  - Various other improvements
 
 1.0.2 (September 5, 2007)
 

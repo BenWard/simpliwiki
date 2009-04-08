@@ -1,6 +1,15 @@
 <?php
 
-// W2 configuration file
+/*
+ * W2
+ *
+ * Copyright (C) 2007-2009 Steven Frank <http://stevenf.com/>
+ * Code may be re-used as long as the above copyright notice is retained.
+ * See README.txt for full details.
+ *
+ * Written with Coda: <http://panic.com/coda/>
+ *
+ */
 
 // --------------------
 // Site layout settings
@@ -126,6 +135,9 @@ define('W2_PASSWORD', 'secret');
 // Alternate (more secure) password storage.
 // To use a hashed password, Comment out the W2_PASSWORD definition above and uncomment
 // this one, using the result of sha1('your_password') as the value.
+//
+// In Mac OS X, you can do this from the Terminal:   
+//     echo -n 'your_password' | openssl sha1
 //
 // define('W2_PASSWORD_HASH', 'e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4');
 
