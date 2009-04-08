@@ -6,6 +6,8 @@ W2: Simple web notes
 Copyright (C) 2007-2009 Steven Frank <http://stevenf.com/> and 
 contributors
 
+Written with Coda: <http://panic.com/coda/>
+
 
 Design Goals
 ------------

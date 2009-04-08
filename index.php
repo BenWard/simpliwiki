@@ -101,7 +101,6 @@ function descLengthSort($val_1, $val_2)
 }
 
 
-
 function toHTML($inText)
 {
 	global $page;
@@ -144,9 +143,8 @@ function sanitizeFilename($inFileName)
 function destroy_session()
 {
 	if ( isset($_COOKIE[session_name()]) )
-	{
 		setcookie(session_name(), '', time() - 42000, '/');
-	}
+
 	session_destroy();
 	unset($_SESSION["password"]);
 	unset($_SESSION);
@@ -159,6 +157,7 @@ if ( !function_exists('file_put_contents') )
     function file_put_contents($n, $d)
     {
 		$f = @fopen($n, "w");
+		
 		if ( !$f )
 		{
 			return false;
