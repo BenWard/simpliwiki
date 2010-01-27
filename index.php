@@ -1,17 +1,15 @@
 <?php
-
 /*
- * W2
+ * Simpliwiki
  *
- * Copyright (C) 2007-2009 Steven Frank <http://stevenf.com/>
+ * Copyright (C) 2010 Ben Ward <http://benward.me>
+ * Parts from W2, Copyright (C) 2007-2009 Steven Frank <http://stevenf.com/>
+ *
  * Code may be re-used as long as the above copyright notice is retained.
  * See README.txt for full details.
- *
- * Written with Coda: <http://panic.com/coda/>
- *
  */
- 
-include_once "markdown.php";
+
+include_once "lib/markdown.php";
 
 // User configurable options:
 
@@ -27,7 +25,7 @@ if ( count($allowedIPs) > 0 )
 {
 	$ip = $_SERVER['REMOTE_ADDR'];
 	$accepted = false;
-	
+
 	foreach ( $allowedIPs as $allowed )
 	{
 		if ( strncmp($allowed, $ip, strlen($allowed)) == 0 )
@@ -36,7 +34,7 @@ if ( count($allowedIPs) > 0 )
 			break;
 		}
 	}
-	
+
 	if ( !$accepted )
 	{
 		print "<html><body>Access from IP address $ip is not allowed";
@@ -49,7 +47,7 @@ if ( REQUIRE_PASSWORD && !isset($_SESSION['password']) )
 {
 	if ( !defined('W2_PASSWORD_HASH') || W2_PASSWORD_HASH == '' )
 		define('W2_PASSWORD_HASH', sha1(W2_PASSWORD));
-	
+
 	if ( (isset($_POST['p'])) && (sha1($_POST['p']) == W2_PASSWORD_HASH) )
 		$_SESSION['password'] = W2_PASSWORD_HASH;
 	else
@@ -76,56 +74,56 @@ function printToolbar()
  	print "<a class=\"tool\" href=\"" . SELF . "?action=all_name\">All</a> ";
 	print "<a class=\"tool\" href=\"" . SELF . "?action=all_date\">Recent</a> ";
  	print "<a class=\"tool\" href=\"" . SELF . "\">". DEFAULT_PAGE . "</a>";
- 	
+
 	if ( REQUIRE_PASSWORD )
 		print '<a class="tool" href="' . SELF . '?action=logout">Logout</a>';
-		
+
 	print "</div>\n";
 }
 
 
-function descLengthSort($val_1, $val_2) 
-{ 
+function descLengthSort($val_1, $val_2)
+{
 	$retVal = 0;
 
-	$firstVal = strlen($val_1); 
+	$firstVal = strlen($val_1);
 	$secondVal = strlen($val_2);
 
-	if ( $firstVal > $secondVal ) 
-		$retVal = -1; 
-	
-	else if ( $firstVal < $secondVal ) 
-		$retVal = 1; 
+	if ( $firstVal > $secondVal )
+		$retVal = -1;
 
-	return $retVal; 
+	else if ( $firstVal < $secondVal )
+		$retVal = 1;
+
+	return $retVal;
 }
 
 
 function toHTML($inText)
 {
 	global $page;
-	
+
 	$dir = opendir(PAGES_PATH);
 	while ( $filename = readdir($dir) )
 	{
 		if ( $filename{0} == '.' )
 			continue;
-			
+
 		$filename = preg_replace("/(.*?)\.txt/", "\\1", $filename);
 		$filenames[] = $filename;
 	}
 	closedir($dir);
-	
-	uasort($filenames, "descLengthSort"); 
+
+	uasort($filenames, "descLengthSort");
 
 	if ( AUTOLINK_PAGE_TITLES )
-	{	
+	{
 		foreach ( $filenames as $filename )
 		{
 	 		$inText = preg_replace("/(?<![\>\[\/])($filename)(?!\]\>)/im", "<a href=\"" . SELF . VIEW . "/$filename\">\\1</a>", $inText);
 		}
 	}
-	
+
  	$inText = preg_replace("/\[\[(.*?)\]\]/", "<a href=\"" . SELF . VIEW . "/\\1\">\\1</a>", $inText);
 	$inText = preg_replace("/\{\{(.*?)\}\}/", "<img src=\"images/\\1\" alt=\"\\1\" />", $inText);
 	$inText = preg_replace("/message:(.*?)\s/", "[<a href=\"message:\\1\">email</a>]", $inText);
@@ -157,7 +155,7 @@ if ( !function_exists('file_put_contents') )
     function file_put_contents($n, $d)
     {
 		$f = @fopen($n, "w");
-		
+
 		if ( !$f )
 		{
 			return false;
@@ -175,12 +173,12 @@ if ( !function_exists('file_put_contents') )
 
 if ( isset($_REQUEST['action']) )
 	$action = $_REQUEST['action'];
-else 
+else
 	$action = 'view';
 
-if ( preg_match('@^/@', @$_SERVER["PATH_INFO"]) ) 
+if ( preg_match('@^/@', @$_SERVER["PATH_INFO"]) )
 	$page = sanitizeFilename(substr($_SERVER["PATH_INFO"], 1));
-else 
+else
 	$page = sanitizeFilename(@$_REQUEST['page']);
 
 $upage = urlencode($page);
@@ -251,12 +249,12 @@ else if ( $action == "uploaded" )
 		$fileType = $_FILES['userfile']['type'];
 		preg_match('/\.([^.]+)$/', $dstName, $matches);
 		$fileExt = isset($matches[1]) ? $matches[1] : null;
-		
+
 		if (in_array($fileType, explode(',', VALID_UPLOAD_TYPES)) &&
 			in_array($fileExt, explode(',', VALID_UPLOAD_EXTS)))
 		{
-			if ( move_uploaded_file($_FILES['userfile']['tmp_name'], 
-				BASE_PATH . "/images/$dstName") === true ) 
+			if ( move_uploaded_file($_FILES['userfile']['tmp_name'],
+				BASE_PATH . "/images/$dstName") === true )
 			{
 				$html = "<p class=\"note\">File '$dstName' uploaded</p>\n";
 			}
@@ -279,7 +277,7 @@ else if ( $action == "save" )
 	$success = file_put_contents($filename, $newText);
  	error_reporting($errLevel);
 
-	if ( $success )	
+	if ( $success )
 		$html = "<p class=\"note\">Saved</p>\n";
 	else
 		$html = "<p class=\"note\">Error saving changes! Make sure your web server has write access to " . PAGES_PATH . "</p>\n";
@@ -303,7 +301,7 @@ else if ( $action == "renamed" )
 
 	$prevpage = sanitizeFilename($pp);
 	$prevpage = urlencode($prevpage);
-	
+
 	$prevfilename = PAGES_PATH . "/$prevpage.txt";
 
 	if ( rename($prevfilename, $filename) )
@@ -329,7 +327,7 @@ else if ( $action == "all" )
 {
 	$html = "<ul>\n";
 	$dir = opendir(PAGES_PATH);
-	
+
 	while ( $file = readdir($dir) )
 	{
 		if ( $file{0} == "." )
@@ -375,7 +373,7 @@ else if ( $action == "all_date" )
 	{
 		if ( $file{0} == "." )
 			continue;
-			
+
 		$filelist[preg_replace("/(.*?)\.txt/", "<a href=\"" . SELF . VIEW . "/\\1\">\\1</a>", $file)] = filemtime(PAGES_PATH . "/$file");
 	}
 
@@ -397,14 +395,14 @@ else if ( $action == "search" )
 	if ( trim($q) != "" )
 	{
 		$dir = opendir(PAGES_PATH);
-		
+
 		while ( $file = readdir($dir) )
 		{
 			if ( $file{0} == "." )
 				continue;
 
 			$text = file_get_contents(PAGES_PATH . "/$file");
-			
+
 			if ( eregi($q, $text) )
 			{
 				++$matches;
@@ -412,7 +410,7 @@ else if ( $action == "search" )
 				$html .= "<li>$file</li>\n";
 			}
 		}
-		
+
 		closedir($dir);
 	}
 
@@ -428,7 +426,7 @@ $datetime = '';
 
 if (( $action == "all" ) || ( $action == "all_name") || ($action == "all_date"))
 	$title = "All Pages";
-	
+
 else if ( $action == "upload" )
 	$title = "Upload Image";
 
